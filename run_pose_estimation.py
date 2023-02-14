@@ -29,14 +29,7 @@ import importlib.util
 import datetime
 
 import time
-import RPi.GPIO as GPIO
-
-GPIO.setmode(GPIO.BCM)
-#led
-GPIO.setup(4, GPIO.OUT)
-#button
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
+# import RPi.GPIO as GPIO
 
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -46,8 +39,8 @@ class VideoStream:
         # Initialize the PiCamera and the camera image stream
         #breakpoint()
         
-        self.stream = cv2.VideoCapture(0)
-        print("Camera initiated.")
+        self.stream = cv2.VideoCapture("test.mp4")
+        print("Video loaded.")
         ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         ret = self.stream.set(3,resolution[0])
         ret = self.stream.set(4,resolution[1])
@@ -230,12 +223,12 @@ try:
     while True:
     #if True:
         #make sure LED is off and wait for button press
-        if not led_on and  not GPIO.input(17):
-        #if True:
+        # if not led_on and  not GPIO.input(17):
+        if True:
             #timestamp an output directory for each capture
             outdir = pathlib.Path(args.output_path) / time.strftime('%Y-%m-%d_%H-%M-%S-%Z')
             outdir.mkdir(parents=True)
-            GPIO.output(4, True)
+            # GPIO.output(4, True)
             time.sleep(.1)
             led_on = True
             f = []
@@ -313,9 +306,9 @@ try:
                 status = cv2.imwrite(path, frame_resized)
 
                 # Press 'q' to quit
-                if cv2.waitKey(1) == ord('q') or led_on and not GPIO.input(17):
+                if cv2.waitKey(1) == ord('q'):
                     print(f"Saved images to: {outdir}")
-                    GPIO.output(4, False)
+                    # GPIO.output(4, False)
                     led_on = False
                     # Clean up
                     cv2.destroyAllWindows()
@@ -328,6 +321,4 @@ except KeyboardInterrupt:
     cv2.destroyAllWindows()
     videostream.stop()
     print('Stopped video stream.')
-    GPIO.output(4, False)
-    GPIO.cleanup()
     #print(str(sum(f)/len(f)))
