@@ -1,7 +1,7 @@
-######## Webcam Object Detection Using Tensorflow-trained Classifier #########
+######## Object Detection Using Tensorflow-trained Classifier #########
 #
-# Author: Evan Juraes and Ethan Dell
-# Date: 10/27/19 & 1/30/2021
+# Author: Evan Juraes, Ethan Dell and Rakhul Kumar
+# Date: 10/27/19 , 1/30/2021 & 02/16/2023
 # Description: 
 # This program uses a TensorFlow Lite model to perform object detection on a live webcam
 # feed. It draws boxes and scores around the objects of interest in each frame from the
@@ -12,7 +12,7 @@
 # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/examples/python/label_image.py
 #
 # I added my own method of drawing boxes and labels using OpenCV.
-############ Credit to Evan for writing this script. I modified it to work with the PoseNet model.##### 
+############ Credit to Evan & Ethan for writing this script. I modified it to work with the BrainyPi ##### 
 
 # Import packages
 import os
@@ -40,7 +40,7 @@ class VideoStream:
         #breakpoint()
         
         self.stream = cv2.VideoCapture("test_video.mp4")
-        print("Video loaded.")
+        print("1. Video loaded.")
         ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         ret = self.stream.set(3,resolution[0])
         ret = self.stream.set(4,resolution[1])
@@ -95,6 +95,8 @@ parser.add_argument('--output_path', help="Where to save processed imges from pi
 
 args = parser.parse_args()
 
+print("2. Checkpoint")
+
 MODEL_NAME = args.modeldir
 GRAPH_NAME = args.graph
 LABELMAP_NAME = args.labels
@@ -116,11 +118,15 @@ else:
     if use_TPU:
         from tensorflow.lite.python.interpreter import load_delegate
 
+print("3. Packages Imported")
+
 # If using Edge TPU, assign filename for Edge TPU model
 if use_TPU:
     # If user has specified the name of the .tflite file, use that name, otherwise use default 'edgetpu.tflite'
     if (GRAPH_NAME == 'detect.tflite'):
         GRAPH_NAME = 'edgetpu.tflite'       
+
+print("4. Checkpoint")
 
 # Get path to current working directory
 CWD_PATH = os.getcwd()
@@ -137,6 +143,8 @@ if use_TPU:
 else:
     interpreter = Interpreter(model_path=PATH_TO_CKPT)
 interpreter.allocate_tensors()
+
+print("5. Checkpoint")
 
 # Get model details
 input_details = interpreter.get_input_details()
@@ -218,19 +226,16 @@ def draw_lines(keypoints, image, bad_pts):
 #flag for debugging
 debug = True 
 
+print("6. Checkpoint")
+
 try:
-    print("Progam started - waiting for button push...")
+    print("7. Progam started ")
     while True:
-    #if True:
-        #make sure LED is off and wait for button press
-        # if not led_on and  not GPIO.input(17):
         if True:
             #timestamp an output directory for each capture
             outdir = pathlib.Path(args.output_path) / time.strftime('%Y-%m-%d_%H-%M-%S-%Z')
             outdir.mkdir(parents=True)
-            # GPIO.output(4, True)
             time.sleep(.1)
-            led_on = True
             f = []
 
             # Initialize frame rate calculation
@@ -238,6 +243,7 @@ try:
             freq = cv2.getTickFrequency()
             videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
             time.sleep(1)
+            print("8. Checkpoint")
 
             #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
             while True:
@@ -271,6 +277,8 @@ try:
                 offset_vectors = get_offsets(output_details, coords)
                 #use stide to get coordinates in image coordinates
                 keypoint_positions = coords * output_stride + offset_vectors
+
+                print("9. Checkpoint")
             
                 # Loop over all detections and draw detection box if confidence is above minimum threshold
                 for i in range(len(keypoint_positions)):
@@ -285,9 +293,11 @@ try:
                     color = (0, 255, 0)
                     thickness = 2
                     cv2.circle(frame_resized, center_coordinates, radius, color, thickness)
+                    print("10. Checkpoint")
                     if debug:
                         cv2.putText(frame_resized, str(i), (x-4, y-4), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 1) # Draw label text
      
+                print("10. Checkpoint")
                 frame_resized = draw_lines(keypoint_positions, frame_resized, drop_pts)
 
                 # Draw framerate in corner of frame - remove for small image display
@@ -304,6 +314,8 @@ try:
                 path = str(outdir) + '/'  + str(datetime.datetime.now()) + ".jpg"
 
                 status = cv2.imwrite(path, frame_resized)
+
+                print("11. Checkpoint")
 
                 # Press 'q' to quit
                 if cv2.waitKey(1) == ord('q'):
