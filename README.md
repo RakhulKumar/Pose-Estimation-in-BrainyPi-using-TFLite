@@ -1,5 +1,7 @@
 # **Pose Estimation on the Raspberry Pi 4**
 
+This repo is a fork of ecd1012/rpi_pose_estimation. I have changed it to make it compatible on a BrainyPi by removing all GPIO triggered functions
+
 Results
 =======
 <img src="images/pose.gif" width="500" height="500">
