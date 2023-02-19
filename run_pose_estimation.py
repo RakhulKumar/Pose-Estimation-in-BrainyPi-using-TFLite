@@ -19,62 +19,16 @@ import os
 import argparse
 import cv2
 import numpy as np
-import sys
-import pdb
 import time
-import math
 import pathlib
 from threading import Thread
 import importlib.util
 import datetime
 
+
 import time
-# import RPi.GPIO as GPIO
 
-# Define VideoStream class to handle streaming of video from webcam in separate processing thread
-# Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
-class VideoStream:
-    """Camera object that controls video streaming from the Picamera"""
-    def __init__(self,resolution=(640,480),framerate=30):
-        # Initialize the PiCamera and the camera image stream
-        #breakpoint()
-        
-        self.stream = cv2.VideoCapture("test_video.mp4")
-        print("1. Video loaded.")
-        # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-        ret = self.stream.set(3,resolution[0])
-        ret = self.stream.set(4,resolution[1])
-            
-        # Read first frame from the stream
-        (self.grabbed, self.frame) = self.stream.read()
-
-    # Variable to control when the camera is stopped
-        self.stopped = False
-
-    def start(self):
-    # Start the thread that reads frames from the video stream
-        Thread(target=self.update,args=()).start()
-        return self
-
-    def update(self):
-        # Keep looping indefinitely until the thread is stopped
-        while True:
-            # If the camera is stopped, stop the thread
-            if self.stopped:
-                # Close camera resources
-                self.stream.release()
-                return
-
-            # Otherwise, grab the next frame from the stream
-            (self.grabbed, self.frame) = self.stream.read()
-
-    def read(self):
-    # Return the most recent frame
-        return self.frame
-
-    def stop(self):
-    # Indicate that the camera and thread should be stopped
-        self.stopped = True
+main_path = "/Users/rakhul/Desktop/INTERNSHIP/IoTIoT.in/AI INTERN/Pose-Estimation-in-RPi-using-TFLite/frames/"
 
 # Define and parse input arguments
 parser = argparse.ArgumentParser()
@@ -117,21 +71,17 @@ else:
         from tensorflow.lite.python.interpreter import load_delegate
 
 
-
 # If using Edge TPU, assign filename for Edge TPU model
 if use_TPU:
     # If user has specified the name of the .tflite file, use that name, otherwise use default 'edgetpu.tflite'
     if (GRAPH_NAME == 'detect.tflite'):
         GRAPH_NAME = 'edgetpu.tflite'       
 
-
-
 # Get path to current working directory
 CWD_PATH = os.getcwd()
 
 # Path to .tflite file, which contains the model that is used for object detection
 PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME)
-
 
 # If using Edge TPU, use special load_delegate argument
 if use_TPU:
@@ -221,17 +171,44 @@ def draw_lines(keypoints, image, bad_pts):
         image = cv2.line(image, start_pos, end_pos, color, thickness)
     return image
 
+
+def frame_extract(filename):
+
+    cap = cv2.VideoCapture(filename)
+    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    if (cap.isOpened()== False):
+        print("Error opening video file")
+    print(length)
+    frame_count = 1
+    for i in range(length): 
+        ret, img = cap.read()
+        if ret == True:
+            cv2.imshow("Bounding Video", img)
+            print(frame_count)
+            cv2.imwrite(str(main_path) +str(frame_count)+ ".png", img)
+            frame_count += 1
+            if cv2.waitKey(25) & 0xFF == ord('q'):          # Press Q on keyboard to exit
+                break
+            else:
+                continue
+    cap.release()
+    cv2.destroyAllWindows()
+    return(frame_count)
+
+frame_count = frame_extract("test_video.mp4")
+# frame_count = 356
 #flag for debugging
 debug = True 
 
 #flag for running the loop
 status = True
 
-
+var = 1
 
 try:
-    print("Progam started - waiting for button push...")
-    while True:
+    print("Progam started")
+    while (var<frame_count) and not led_on:
 
         #make sure LED is off and wait for button press
         if not led_on:
@@ -246,23 +223,23 @@ try:
             # Initialize frame rate calculation
             frame_rate_calc = 1
             freq = cv2.getTickFrequency()
-            videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
+            # videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
             time.sleep(1)
+            print("Running Loop")
 
             #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
             while True:
-                print('running loop')
+                print(str(var))
                 # Start timer (for calculating frame rate)
                 t1 = cv2.getTickCount()
                 
                 # Grab frame from video stream
-                frame1 = videostream.read()
-                # Acquire frame and resize to expected shape [1xHxWx3]
-                # try:
-                frame = frame1.copy()
-                # except:
-                    # pass
+                # frame1 = videostream.read()
+                frame1 = cv2.imread(str(main_path) + str(var)+ ".png") 
 
+                var = var+1
+                # Acquire frame and resize to expected shape [1xHxWx3]
+                frame = frame1.copy()
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame_resized = cv2.resize(frame_rgb, (width, height))
                 input_data = np.expand_dims(frame_resized, axis=0)
@@ -276,8 +253,6 @@ try:
                 # Perform the actual detection by running the model with the image as input
                 interpreter.set_tensor(input_details[0]['index'],input_data)
                 interpreter.invoke()
-
-                print("Checkpoint A")
                 
                 #get y,x positions from heatmap
                 coords = sigmoid_and_argmax2d(output_details, min_conf_threshold)
@@ -305,11 +280,6 @@ try:
                         cv2.putText(frame_resized, str(i), (x-4, y-4), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 1) # Draw label text
      
                 frame_resized = draw_lines(keypoint_positions, frame_resized, drop_pts)
-                print("Checkpoint B")
-
-                # Draw framerate in corner of frame - remove for small image display
-                #cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
-                #cv2.putText(frame_resized,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
                 # Calculate framerate
                 t2 = cv2.getTickCount()
@@ -325,20 +295,18 @@ try:
                 status = cv2.imwrite(path, frame_resized)
 
                 # Press 'q' to quit
-                if cv2.waitKey(1) == ord('q') or led_on == False:
+                if cv2.waitKey(1) == ord('q') or led_on == False or var == frame_count:
                     print(f"Saved images to: {outdir}")
-                    led_on = False
-                    print("Checkpoint C")
-
-
+                    led_on = True
                     cv2.destroyAllWindows()
-                    videostream.stop()
+                    # videostream.stop()
                     time.sleep(2)
                     break
+            
 
 except KeyboardInterrupt:
     # Clean up
     cv2.destroyAllWindows()
-    videostream.stop()
+    # videostream.stop()
     print('Stopped video stream.')
 

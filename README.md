@@ -27,20 +27,6 @@ Additional Resources
 * **Blog Pose on Posenet**: https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5
 * **Pose estimation with TensorFlow Lite**:https://www.tensorflow.org/lite/models/pose_estimation/overview
 
-Testing Configuration
-=============================
-
-Core
-* Raspberry Pi 4 GB
-* Raspberry Pi 5MP Camera (rev 1.3)
-
-Other
-* LED 
-* 470 Ohm Resistor
-* Small breadboard 
-* GPIO push button
-* 3.5 Amp USB-C Power Supply
-
 Setting Up Software
 ====================
 1.) Clone Repository:
@@ -72,7 +58,7 @@ Running Pose Estimation
 =================
 7.) After all your hardware and software is configured correctly run the following command:
 ```
-python3 run_pose_estimation.py --modeldir posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite --output_path pose_images
+python3 run_pose_estimation.py --modeldir posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite --output_path save_img
 ```
 Where the --output_path you specify is where you want images saved.
 
