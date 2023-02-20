@@ -15,17 +15,10 @@ Details of Software and Neural Network Model for Object Detection:
 * Framework: TensorFlow Lite
 * Network: PoseNet with MobileNet-V1
 
-
-The motivation for the Project
-========================
-The goal of this project was to how well pose estimation could perform on the Raspberry Pi.
-Google provides code to run pose estimation on Android and IOS devices - but I wanted to write
-python code to interface with and test the model on the Pi.
 For more information checkout my medium post here: https://ecd1012.medium.com/pose-estimation-on-the-raspberry-pi-4-83a02164eb8e
 
 Additional Resources
 ===================
-* **YouTube Turorial For This Repository**: https://youtu.be/RUp-K4NEllg
 * **Blog Pose on Posenet**: https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5
 * **Pose estimation with TensorFlow Lite**:https://www.tensorflow.org/lite/models/pose_estimation/overview
 
@@ -64,13 +57,6 @@ python3 run_pose_estimation.py --modeldir posenet_mobilenet_v1_100_257x257_multi
 ```
 Where the --output_path you specify is where you want images saved.
 
-8.) The script will start running and wait for you to press the GPIO input button to start processing the video feed from the camera. 
-Once you press the button, the green LED will turn on and the pi will start feeding and processing the video stream through the neural network.
-Processed images will be saved to the '--output_path' you specified over the command line, with a timestamped folder for each button press.
-
-9.) If you like, make a video out of the images.
-You can do this with gif making software, video making software, or ffmpeg.
-Help: https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
-Or by using gif maker software: https://ezgif.com/
+8.) The script will start running and the processed images will be saved to the '--output_path' you specified over the command line, with a timestamped name for each frame.
 
 
