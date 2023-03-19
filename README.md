@@ -26,11 +26,11 @@ Setting Up Software
 ====================
 1.) Clone Repository:
 ```
-git clone https://github.com/ecd1012/rpi_pose_estimation.git
+git clone https://github.com/RakhulKumar/Pose-Estimation-in-BrainyPi-using-TFLite.git
 ````
 2.) Change directory to source code:
 ```
-cd rpi_pose_estimation
+cd Pose-Estimation-in-BrainyPi-using-TFLite
 ```
 3.) Please see my other post here: https://github.com/ecd1012/rpi_road_object_detection
 And follow **Setting Up Software** Steps: 3-9 before proceeding
