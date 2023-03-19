@@ -43,20 +43,38 @@ Here is a video of those steps: https://youtu.be/Zfmo3bMycUg
 wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite
 ```
 
-Setting Up Hardware
+Setting Up Virtual Environment
 ===================
-6.) Please see my other post here: https://github.com/ecd1012/rpi_road_object_detection
-And follow **Setting Up Hardware** Steps: 10-12 before proceeding
-Here is a video of those steps: https://youtu.be/Zfmo3bMycUg
+1.) Open command prompt and make sure pi is up to date:
+```
+sudo apt-get update && sudo apt-get upgrade
+```
+2.) Install virtual environment: 
+```
+sudo pip3 install virtualenv
+```
+3.) Make virtual environment:
+```
+python3.7 -m venv TFLite-venv
+```
+4.) Activate Environment:
+```
+source TFLite-venv/bin/activate
+```
+5.) Install the dependencies:
+```
+bash get_py_requirements.sh
+
+```
 
 Running Pose Estimation
 =================
-7.) After all your hardware and software is configured correctly run the following command:
+1.) After all your software is configured correctly run the following command:
 ```
 python3 run_pose_estimation.py --modeldir posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite --output_path save_img
 ```
 Where the --output_path you specify is where you want images saved.
 
-8.) The script will start running and the processed images will be saved to the '--output_path' you specified over the command line, with a timestamped name for each frame.
+2.) The script will start running and the processed images will be saved to the '--output_path' you specified over the command line, with a timestamped name for each frame.
 
 
