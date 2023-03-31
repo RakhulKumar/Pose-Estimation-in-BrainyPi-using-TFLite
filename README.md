@@ -1,4 +1,4 @@
-# **Pose Estimation on the Raspberry Pi 4**
+# **Pose Estimation on BrainyPi**
 
 This repo is a fork of ecd1012/rpi_pose_estimation. I have changed it to make it compatible on a BrainyPi by removing all GPIO triggered functions
 
@@ -8,7 +8,7 @@ Results
 
 Description of Repository
 =========================
-This repository contains code and instructions to configure the necessary software for running pose estimation on the Raspberry Pi 4!
+This repository contains code and instructions to configure the necessary software for running pose estimation on BrainyPi!
 
 Details of Software and Neural Network Model for Object Detection:
 * Language: Python
