@@ -17,7 +17,7 @@ Details of Software and Neural Network Model for Object Detection:
 
 Additional Resources
 ===================
-* **Blog Pose on Posenet**: https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5
+* **Blog Post on Posenet**: https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5
 * **Blog Post on this project**: https://ecd1012.medium.com/pose-estimation-on-the-raspberry-pi-4-83a02164eb8e
 * **Pose estimation with TensorFlow Lite**:https://www.tensorflow.org/lite/models/pose_estimation/overview
 
